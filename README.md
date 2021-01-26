@@ -1,5 +1,7 @@
 # UdonSunController
 
+**You can download latest unitypackage from [here](https://github.com/esnya/UdonSunController/releases/latest)!!**
+
 Bright daylight, Reddish sunsets or Dark night...
 
 UdonSunController provides the ability to freely control the Directional Light at runtime for your VRChat Udon world. Just place the prefab in your scene. It automatically controls the brightness and color temperature from the direction of sun. Reflection probes can also be re-baked.
