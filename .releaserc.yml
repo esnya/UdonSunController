@@ -3,5 +3,3 @@ plugins:
   - - '@semantic-release/github'
     - assets:
       - path: dist/
-branches:
-  - master

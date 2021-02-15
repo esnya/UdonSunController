@@ -1,9 +1,7 @@
 name: Release Unity Package
 
 on:
-  push:
-    branches:
-      - master
+  - push
 
 jobs:
   prebuild:
@@ -12,7 +10,6 @@ jobs:
       package_name: ${{steps.package_name.outputs.package_name}}
     steps:
       - id: package_name
-        #run: echo "::set-output name=package_name::$(echo ${GITHUB_REPOSITORY##*/}-${GITHUB_REF##*/})"
         run: echo "::set-output name=package_name::$(echo ${GITHUB_REPOSITORY##*/})"
 
   release:
