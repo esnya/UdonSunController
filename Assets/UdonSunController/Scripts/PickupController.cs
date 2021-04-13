@@ -1,14 +1,7 @@
 using UdonSharp;
 using UdonToolkit;
 using UnityEngine;
-using VRC.SDKBase;
-using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
-
-#if UNITY_EDITOR && !COMPILER_UDONSHARP
-using UdonSharpEditor;
-using UnityEditor;
-#endif
 
 namespace EsnyaFactory.UdonSunController
 {
@@ -53,7 +46,7 @@ namespace EsnyaFactory.UdonSunController
         [ListView("OnDrop Target List")][Popup("behaviour", "onDropTargets", true)][UTEditor]
         public string[] onDropEvents;
 
-        
+
         #endregion
 
         #region Private Variables
