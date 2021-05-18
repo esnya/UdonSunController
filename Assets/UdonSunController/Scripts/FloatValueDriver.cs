@@ -15,44 +15,42 @@ namespace EsnyaFactory.UdonSunController
     {
         #region Public Variables
         [SectionHeader("Value Calculation Mode")]
-        [Popup("GetModeOptions")][OnValueChanged("OnModeStringChanged")][HelpBox("")][UTEditor]
+        [Popup("GetModeOptions"), OnValueChanged("OnModeStringChanged"), HelpBox("")]
         public string modeString;
         [HideInInspector] public int mode;
 
         [Space]
 
         [SectionHeader("Value Sources")]
-        [HideIf("HideTransformSource")][UTEditor]
+        [HideIf("HideTransformSource")]
         public Transform sourceTransform;
-        [HideIf("HideTransformOrigin")][UTEditor]
+        [HideIf("HideTransformOrigin")]
         public Transform transformOrigin;
-        [HideIf("HideLocalVector")][UTEditor]
+        [HideIf("HideLocalVector")]
         public Vector3 localVector;
-        [HideIf("HideWorldVector")][UTEditor]
+        [HideIf("HideWorldVector")]
         public Vector3 worldVector;
-        [HideIf("HideAxisVector")][UTEditor]
+        [HideIf("HideAxisVector")]
         public Vector3 axisVector;
 
         [Space]
-        [SectionHeader("Value Transform")][UTEditor]
+        [SectionHeader("Value Transform")]
         public float valueMultiplier = 1;
         public float valueBias = 0;
         public bool clampValue;
-        [HideIf("@!clampValue")][UTEditor]
+        [HideIf("@!clampValue")]
         public float minValue = 0;
-        [HideIf("@!clampValue")][UTEditor]
+        [HideIf("@!clampValue")]
         public float maxValue = 1;
 
         [Space]
-        [SectionHeader("Drive Targets")][UTEditor]
-        public bool driveAnimatorParameters ;
+        [SectionHeader("Drive Targets")]
+        public bool driveAnimatorParameters;
 
-        [HideIf("@!driveAnimatorParameters")][ListView("Target Animators")][UTEditor]
-        public Animator[] targetAnimators;
+        [HideIf("@!driveAnimatorParameters"), ListView("Target Animators")]
+        public Animator[] targetAnimators = { };
         [ListView("Target Animators")]
-        [Popup("GetTargetAnimatorParameters")]
-        [UTEditor]
-        public string[] targetAnimatorParameters;
+        public string[] targetAnimatorParameters = { };
         #endregion
 
         #region Unity Events
@@ -108,7 +106,8 @@ namespace EsnyaFactory.UdonSunController
 
         float DirectionInnerProduct()
         {
-            if (sourceTransform == null) {
+            if (sourceTransform == null)
+            {
                 Debug.LogError($"[{nameof(FloatValueDriver)}({gameObject.name})] sourceTransform is requried.");
                 return 0;
             }
@@ -137,7 +136,7 @@ namespace EsnyaFactory.UdonSunController
 #if !COMPILER_UDONSHARP && UNITY_EDITOR
         public string[] GetModeOptions()
         {
-            return new [] {"Direction Inner Product", "Position Inner Product"};
+            return new[] { "Direction Inner Product", "Position Inner Product" };
         }
 
         public void OnModeStringChanged(SerializedObject o, SerializedProperty prop)
@@ -200,14 +199,6 @@ namespace EsnyaFactory.UdonSunController
                 default:
                     return true;
             }
-        }
-
-        public string[] GetTargetAnimatorParameters(SerializedProperty prop)
-        {
-            var animator = prop.objectReferenceValue as Animator;
-            if (animator == null) return new string[] {};
-
-            return animator.parameters.Where(p => p.type == AnimatorControllerParameterType.Float).Select(p => p.name).ToArray();
         }
 #endif
         #endregion

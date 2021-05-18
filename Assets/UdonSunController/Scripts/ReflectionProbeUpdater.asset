@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: ReflectionProbeUpdater
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 0f573cf5c13741b4982dcd0b517ca042,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: fd6cc6b2ea4f38e4e95a3c9fc74cf3c1,
     type: 2}
   udonAssembly: 
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: e5084742381fa0842937a13439780bd0, type: 3}
+  behaviourSyncMode: 0
   behaviourIDHeapVarName: __refl_const_intnl_udonTypeID
   compileErrors: []
   hasInteractEvent: 0
@@ -48,7 +49,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: reflectionProbe
+      Data: renderOnStart
     - Name: $v
       Entry: 7
       Data: 2|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -60,7 +61,7 @@ MonoBehaviour:
       Data: 4|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: UnityEngine.ReflectionProbe, UnityEngine.CoreModule
+      Data: System.Boolean, mscorlib
     - Name: 
       Entry: 8
       Data: 
@@ -72,13 +73,13 @@ MonoBehaviour:
       Data: 0
     - Name: symbolResolvedTypeName
       Entry: 1
-      Data: UnityEngineReflectionProbe
+      Data: SystemBoolean
     - Name: symbolOriginalName
       Entry: 1
-      Data: reflectionProbe
+      Data: renderOnStart
     - Name: symbolUniqueName
       Entry: 1
-      Data: reflectionProbe
+      Data: renderOnStart
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
@@ -111,7 +112,7 @@ MonoBehaviour:
       Data: 
     - Name: $k
       Entry: 1
-      Data: renderOnStart
+      Data: reflectionProbe
     - Name: $v
       Entry: 7
       Data: 6|UdonSharp.Compiler.FieldDefinition, UdonSharp.Editor
@@ -123,25 +124,25 @@ MonoBehaviour:
       Data: 8|System.RuntimeType, mscorlib
     - Name: 
       Entry: 1
-      Data: System.Boolean, mscorlib
+      Data: UnityEngine.ReflectionProbe, UnityEngine.CoreModule
     - Name: 
       Entry: 8
       Data: 
     - Name: declarationType
       Entry: 3
-      Data: 1
+      Data: 2
     - Name: syncMode
       Entry: 3
       Data: 0
     - Name: symbolResolvedTypeName
       Entry: 1
-      Data: SystemBoolean
+      Data: UnityEngineReflectionProbe
     - Name: symbolOriginalName
       Entry: 1
-      Data: renderOnStart
+      Data: reflectionProbe
     - Name: symbolUniqueName
       Entry: 1
-      Data: renderOnStart
+      Data: reflectionProbe
     - Name: symbolDefaultValue
       Entry: 6
       Data: 
