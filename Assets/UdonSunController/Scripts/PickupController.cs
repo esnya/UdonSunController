@@ -7,6 +7,7 @@ namespace EsnyaFactory.UdonSunController
 {
     [CustomName("Pickup Controller")]
     [HelpMessage("Enhancement VRC_Pickup such as relay events or expose Respawn event.")]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class PickupController : UdonSharpBehaviour
     {
         #region Public Variables

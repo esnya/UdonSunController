@@ -11,6 +11,7 @@ namespace EsnyaFactory.UdonSunController
 {
     [CustomName("Float Value Driver")]
     [HelpMessage("Drives float parameters of animators by one float value calculated from scene.")]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class FloatValueDriver : UdonSharpBehaviour
     {
         #region Public Variables

@@ -9,6 +9,7 @@ namespace EsnyaFactory.UdonSunController
         CustomName("Reflection Probe Updater"),
         HelpMessage("Updates ReflectionProbe at runtime. Currently, only the \"RenderProbe\" event is available to update the in real-time mode."),
         RequireComponent(typeof(ReflectionProbe)),
+        UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync),
     ]
     public class ReflectionProbeUpdater : UdonSharpBehaviour
     {
