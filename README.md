@@ -13,8 +13,8 @@ Update to latest version.
 * [UdonSharp](https://github.com/MerlinVR/UdonSharp)
 
 ## Usage
-1 Put `Assets/UdonSunController/SunController.prefab` into the scene.
-2 Press `Setup Fom Sene` Button on the inspector of placed `SunController`.
+1. Put `Assets/UdonSunController/SunController.prefab` into the scene.
+2. Press `Setup Fom Sene` Button on the inspector of placed `SunController`.
 
 ### When you added new Reflection Probe (s)
 1. Press `Setup From Scene` again.
