@@ -3,9 +3,7 @@
     "references": [
         "VRC.Udon",
         "UdonSharp.Runtime",
-        "UdonSharp.Editor",
-        "UdonToolkitRuntime",
-        "UdonToolkitEditor"
+        "UdonSharp.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
