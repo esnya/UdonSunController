@@ -19,6 +19,10 @@ Update to latest version.
 ### When you added new Reflection Probe (s)
 1. Press `Setup From Scene` again.
 
+## Migration from v2.x to v3.x.
+* Directional Light has been removed from the prefab. Add to your scene manually or keep the initially created one.
+* The ReflectionProbeUpdator has been removed, please remove the UdonBehaviour that references it that you added to ReflectionProbe. UdonSunController will now update them directly.
+
 ## License
 MIT License
 
