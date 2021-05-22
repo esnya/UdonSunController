@@ -1,0 +1,17 @@
+{
+    "name": "UdonSunControllerRuntime",
+    "references": [
+        "VRC.Udon",
+        "VRC.Udon.Serialization.OdinSerializer",
+        "UdonSharp.Runtime",
+        "UdonSharp.Editor"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
