@@ -1,14 +1,15 @@
 ﻿
 using UdonSharp;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using VRC.SDKBase;
 #if !COMPILER_UDONSHARP && UNITY_EDITOR
+using UnityEngine.SceneManagement;
 using System.Linq;
 using UnityEditor;
 using UdonSharpEditor;
 #endif
 
-namespace EsnyaFactory.UdonSunController
+namespace EsnyaFactory
 {
     [
         UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync),
@@ -20,16 +21,16 @@ namespace EsnyaFactory.UdonSunController
         public AnimationCurve sunIntensity = new AnimationCurve();
         [Range(0, 90)] public float culminationAngle = 55;
 
-        [Space, Header("Settings")]
+        [Space][Header("Settings")]
         public float probeRenderingDelay = 0.5f;
 
-        [Space, Header("References")]
+        [Space][Header("References")]
         public Light directionalLight;
         public ReflectionProbe[] probes = { };
 
-        void Start()
+        private void Start()
         {
-            RenderAllProbes();
+            SendCustomEventDelayedSeconds(nameof(RenderAllProbes), probeRenderingDelay);
         }
 
         public void RenderSingleProbe()
@@ -50,16 +51,18 @@ namespace EsnyaFactory.UdonSunController
     {
         private static string SetupFromScene(UdonSunController controller, bool overrideProbeCullingMask, int probeCullingMask)
         {
-            controller.UpdateProxy();
-
+            Undo.RecordObject(controller, "Setup UdonSunCotnroller");
             var rootObjects = SceneManager.GetActiveScene().GetRootGameObjects();
 
-            controller.directionalLight = rootObjects.SelectMany(o => o.GetComponentsInChildren<Light>()).Where(l => l.type == LightType.Directional && l.enabled && l.lightmapBakeType == LightmapBakeType.Realtime).FirstOrDefault();
-            RenderSettings.sun = controller.directionalLight;
+            var directionalLight = rootObjects.SelectMany(o => o.GetComponentsInChildren<Light>()).Where(l => l.type == LightType.Directional && l.enabled && l.lightmapBakeType == LightmapBakeType.Realtime).FirstOrDefault();
+            var probes = rootObjects.SelectMany(o => o.GetComponentsInChildren<ReflectionProbe>()).ToArray();
 
-            controller.probes = rootObjects.SelectMany(o => o.GetComponentsInChildren<ReflectionProbe>()).ToArray();
+            controller.directionalLight = directionalLight;
+            controller.probes = probes;
 
-            foreach (var probe in controller.probes)
+            RenderSettings.sun = directionalLight;
+
+            foreach (var probe in probes)
             {
                 probe.mode = UnityEngine.Rendering.ReflectionProbeMode.Realtime;
                 probe.refreshMode = UnityEngine.Rendering.ReflectionProbeRefreshMode.ViaScripting;
@@ -72,12 +75,8 @@ namespace EsnyaFactory.UdonSunController
             var handles = controller.GetUdonSharpComponentsInChildren<UdonSunControllerHandle>();
             foreach (var handle in handles)
             {
-                handle.UpdateProxy();
-                handle.controller = controller;
-                handle.ApplyProxyModifications();
+                handle.SetProgramVariable(nameof(handle.controller), controller);
             }
-
-            controller.ApplyProxyModifications();
 
             var errorMessage = controller.directionalLight == null ? "A Realtime DirectionalLight is required. " : handles.Length == 0 ? "A UdonSunControllerHandle is required. " : "";
             var result = errorMessage == "" ? "Done" : "Failed";
@@ -102,7 +101,6 @@ namespace EsnyaFactory.UdonSunController
                 probeCullingMask,
                  Enumerable.Range(0, 32).Select(LayerMask.LayerToName).ToArray()
             );
-            //Debug.Log(probeCullingMask);
 
             if (GUILayout.Button("Setup From Scene")) setupResult = SetupFromScene(controller, overrideProbeCullingMask, probeCullingMask);
 

@@ -5,7 +5,7 @@ using VRC.SDK3.Components;
 using VRC.SDKBase;
 using VRC.Udon.Common.Interfaces;
 
-namespace EsnyaFactory.UdonSunController
+namespace EsnyaFactory
 {
     [
         DefaultExecutionOrder(1000),
@@ -41,7 +41,7 @@ namespace EsnyaFactory.UdonSunController
             sunColor = controller.sunColor;
             sunIntensity = controller.sunIntensity;
             directionalLight = controller.directionalLight;
-            culminationScaler = 1.0f / Mathf.Sin(controller.culminationAngle);
+            culminationScaler = 1.0f / Mathf.Sin(controller.culminationAngle * Mathf.Deg2Rad);
 
             if (blendshapeDriveTarget != null)
             {
@@ -54,7 +54,7 @@ namespace EsnyaFactory.UdonSunController
             var relativePosition = transform.position - origin.position;
             var direction = relativePosition.normalized;
             var intensity = Mathf.Clamp01((relativePosition.magnitude - minRadius) / (maxRadius - minRadius));
-            var time = (-direction.y + 1.0f) * 0.5f * culminationScaler;
+            var time = Mathf.Clamp01((-direction.y * culminationScaler + 1.0f) * 0.5f);
 
             directionalLight.transform.rotation = Quaternion.FromToRotation(-Vector3.forward, direction);;
             directionalLight.color = sunColor.Evaluate(time);
@@ -102,7 +102,7 @@ namespace EsnyaFactory.UdonSunController
 
         public void _StopUpdating()
         {
-            updating = false;
+            updating = pickup.IsHeld;
         }
 
         public void _RequestRenderProbes()
