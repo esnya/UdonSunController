@@ -28,6 +28,10 @@ namespace EsnyaFactory
         public Light directionalLight;
         public ReflectionProbe[] probes = { };
 
+        [Space][Header("Event")]
+        public UdonSharpBehaviour eventTarget;
+        public string eventName = "RenderProbes";
+
         private void Start()
         {
             SendCustomEventDelayedSeconds(nameof(RenderAllProbes), probeRenderingDelay);
@@ -35,17 +39,20 @@ namespace EsnyaFactory
 
         public void RenderSingleProbe()
         {
-            probes[Time.frameCount % probes.Length].RenderProbe();
+            var length = probes.Length;
+            if (length > 0) probes[Time.frameCount % probes.Length].RenderProbe();
         }
 
         public void RenderAllProbes()
         {
             foreach (var probe in probes) probe.RenderProbe();
+
+            if (eventTarget == null) return;
+            eventTarget.SendCustomEvent(eventName);
         }
     }
 
 #if !COMPILER_UDONSHARP && UNITY_EDITOR
-
     [CustomEditor(typeof(UdonSunController))]
     public class UdonSunControllerEditor : Editor
     {
