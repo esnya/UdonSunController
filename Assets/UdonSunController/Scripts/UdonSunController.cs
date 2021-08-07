@@ -45,7 +45,10 @@ namespace EsnyaFactory
 
         public void RenderAllProbes()
         {
-            foreach (var probe in probes) probe.RenderProbe();
+            foreach (var probe in probes)
+            {
+                if (probe) probe.RenderProbe();
+            }
 
             if (eventTarget == null) return;
             eventTarget.SendCustomEvent(eventName);
