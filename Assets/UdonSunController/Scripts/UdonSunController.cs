@@ -1,12 +1,14 @@
 ﻿
 using UdonSharp;
 using UnityEngine;
-using VRC.SDKBase;
+using VRC.Udon;
 #if !COMPILER_UDONSHARP && UNITY_EDITOR
-using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UdonSharpEditor;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 #endif
 
 namespace EsnyaFactory
@@ -21,14 +23,15 @@ namespace EsnyaFactory
         public AnimationCurve sunIntensity = new AnimationCurve();
         [Range(0, 90)] public float culminationAngle = 55;
 
-        [Space][Header("Settings")]
+        [Header("Settings")]
         public float probeRenderingDelay = 0.5f;
+        public bool autoSetupBeforeSave = true;
 
-        [Space][Header("References")]
+        [Header("References")]
         public Light directionalLight;
         public ReflectionProbe[] probes = { };
 
-        [Space][Header("Event")]
+        [Header("Event")]
         public UdonSharpBehaviour eventTarget;
         public string eventName = "RenderProbes";
 
@@ -118,6 +121,36 @@ namespace EsnyaFactory
             {
                 EditorGUILayout.Space();
                 using (new EditorGUILayout.VerticalScope(GUI.skin.box)) EditorGUILayout.LabelField(setupResult);
+            }
+        }
+
+
+        [InitializeOnLoadMethod]
+        public static void RegisterCallback()
+        {
+            EditorSceneManager.sceneSaving += (_, __) => SetupAll();
+        }
+
+        private static IEnumerable<T> GetUdonSharpComponentsInScene<T>() where T : UdonSharpBehaviour
+        {
+            return FindObjectsOfType<UdonBehaviour>()
+                .Where(UdonSharpEditorUtility.IsUdonSharpBehaviour)
+                .Select(UdonSharpEditorUtility.GetProxyBehaviour)
+                .Select(u => u as T)
+                .Where(u => u != null);
+        }
+
+        private static void SetupAll()
+        {
+            var targets = GetUdonSharpComponentsInScene<UdonSunController>();
+            foreach (var target in targets)
+            {
+                if (target?.autoSetupBeforeSave != true) continue;
+
+                var result = SetupFromScene(target, false, 0b100_0011_1000_1001_0010_0111);
+                Debug.Log($"[{target.gameObject.name}] Auto setup {result}");
+
+                EditorUtility.SetDirty(UdonSharpEditorUtility.GetBackingUdonBehaviour(target));
             }
         }
     }
