@@ -126,7 +126,7 @@ namespace EsnyaFactory
 
 
         [InitializeOnLoadMethod]
-        public static void RegisterCallback()
+        public void RegisterCallback()
         {
             EditorSceneManager.sceneSaving += (_, __) => SetupAll();
         }
