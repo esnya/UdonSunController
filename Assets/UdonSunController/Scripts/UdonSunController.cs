@@ -35,6 +35,10 @@ namespace EsnyaFactory
         public UdonSharpBehaviour eventTarget;
         public string eventName = "RenderProbes";
 
+        [Header("Setup")]
+        public bool overrideProbeCullingMask = true;
+        public LayerMask probeCullingMask = 0b100_0011_1000_1001_0010_0111;
+
         private void Start()
         {
             SendCustomEventDelayedSeconds(nameof(RenderAllProbes), probeRenderingDelay);
@@ -62,7 +66,7 @@ namespace EsnyaFactory
     [CustomEditor(typeof(UdonSunController))]
     public class UdonSunControllerEditor : Editor
     {
-        private static string SetupFromScene(UdonSunController controller, bool overrideProbeCullingMask, int probeCullingMask)
+        private static string SetupFromScene(UdonSunController controller)
         {
             Undo.RecordObject(controller, "Setup UdonSunCotnroller");
             var rootObjects = SceneManager.GetActiveScene().GetRootGameObjects();
@@ -80,7 +84,7 @@ namespace EsnyaFactory
                 probe.mode = UnityEngine.Rendering.ReflectionProbeMode.Realtime;
                 probe.refreshMode = UnityEngine.Rendering.ReflectionProbeRefreshMode.ViaScripting;
 
-                if (overrideProbeCullingMask) probe.cullingMask = probeCullingMask;
+                if (controller.overrideProbeCullingMask) probe.cullingMask = controller.probeCullingMask;
 
                 probe.RenderProbe();
             }
@@ -97,25 +101,13 @@ namespace EsnyaFactory
         }
 
         private string setupResult;
-        public bool overrideProbeCullingMask = true;
-        public int probeCullingMask = 0b100_0011_1000_1001_0010_0111;
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
             var controller = target as UdonSunController;
 
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Setup", EditorStyles.boldLabel);
-
-            overrideProbeCullingMask = EditorGUILayout.Toggle("Override Probe CullingMask", overrideProbeCullingMask);
-            probeCullingMask = EditorGUILayout.MaskField(
-                "ProbeCullingMask",
-                probeCullingMask,
-                 Enumerable.Range(0, 32).Select(LayerMask.LayerToName).ToArray()
-            );
-
-            if (GUILayout.Button("Setup From Scene")) setupResult = SetupFromScene(controller, overrideProbeCullingMask, probeCullingMask);
+            if (GUILayout.Button("Setup From Scene")) setupResult = SetupFromScene(controller);
 
             if (!string.IsNullOrEmpty(setupResult))
             {
@@ -147,7 +139,7 @@ namespace EsnyaFactory
             {
                 if (target?.autoSetupBeforeSave != true) continue;
 
-                var result = SetupFromScene(target, false, 0b100_0011_1000_1001_0010_0111);
+                var result = SetupFromScene(target);
                 Debug.Log($"[{target.gameObject.name}] Auto setup {result}");
 
                 EditorUtility.SetDirty(UdonSharpEditorUtility.GetBackingUdonBehaviour(target));
