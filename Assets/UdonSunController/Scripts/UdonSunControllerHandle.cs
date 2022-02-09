@@ -30,7 +30,7 @@ namespace EsnyaFactory
         public UdonSunController controller;
 
         private Transform origin;
-        private Gradient sunColor;
+        private Gradient sunColor, fogColor;
         private AnimationCurve sunIntensity;
         private Light directionalLight;
         private int blendshapeDriveTargetIndex;
@@ -39,6 +39,7 @@ namespace EsnyaFactory
         {
             origin = controller.transform;
             sunColor = controller.sunColor;
+            fogColor = controller.fogColor;
             sunIntensity = controller.sunIntensity;
             directionalLight = controller.directionalLight;
             culminationScaler = 1.0f / Mathf.Sin(controller.culminationAngle * Mathf.Deg2Rad);
@@ -60,6 +61,8 @@ namespace EsnyaFactory
             directionalLight.color = sunColor.Evaluate(time);
             directionalLight.intensity = sunIntensity.Evaluate(time) * intensity;
 
+            RenderSettings.fogColor = fogColor.Evaluate(time);
+
             if (additionalRotationTarget != null) additionalRotationTarget.rotation = Quaternion.FromToRotation(rotationForward, direction);
             if (blendshapeDriveTarget != null) blendshapeDriveTarget.SetBlendShapeWeight(blendshapeDriveTargetIndex, intensity * 100.0f);
 
@@ -70,6 +73,7 @@ namespace EsnyaFactory
         private VRCPickup pickup;
         private void Start()
         {
+            if (!controller) controller = GetComponentInParent<UdonSunController>();
             pickup = (VRCPickup)GetComponent(typeof(VRCPickup));
             UpdateParameterCache();
             ApplyUpdates();
