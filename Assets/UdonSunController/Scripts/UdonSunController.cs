@@ -23,6 +23,9 @@ namespace EsnyaFactory
         public AnimationCurve sunIntensity = new AnimationCurve();
         [Range(0, 90)] public float culminationAngle = 55;
         public Gradient fogColor = new Gradient();
+        public Material[] materials = {};
+        public string[] materialProperties = {};
+        public Gradient[] materialColors = {};
 
         [Header("Settings")]
         public float probeRenderingDelay = 0.5f;
