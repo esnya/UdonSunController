@@ -13,9 +13,7 @@ using UnityEngine.SceneManagement;
 
 namespace EsnyaFactory
 {
-    [
-        UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync),
-    ]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
     public class UdonSunController : UdonSharpBehaviour
     {
         [Header("Styles")]

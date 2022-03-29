@@ -7,12 +7,10 @@ using VRC.Udon.Common.Interfaces;
 
 namespace EsnyaFactory
 {
-    [
-        DefaultExecutionOrder(1000),
-        RequireComponent(typeof(VRCPickup)),
-        RequireComponent(typeof(VRCObjectSync)),
-        UdonBehaviourSyncMode(BehaviourSyncMode.Continuous),
-    ]
+    [DefaultExecutionOrder(1000)]
+    [RequireComponent(typeof(VRCPickup))]
+    [RequireComponent(typeof(VRCObjectSync))]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class UdonSunControllerHandle : UdonSharpBehaviour
     {
         [Header("Handle Settings")]
