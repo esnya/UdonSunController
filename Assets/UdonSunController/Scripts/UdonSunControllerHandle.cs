@@ -1,18 +1,17 @@
 ﻿
 using UdonSharp;
 using UnityEngine;
+using UnityEngine.UIElements;
 using VRC.SDK3.Components;
 using VRC.SDKBase;
 using VRC.Udon.Common.Interfaces;
 
 namespace EsnyaFactory
 {
-    [
-        DefaultExecutionOrder(1000),
-        RequireComponent(typeof(VRCPickup)),
-        RequireComponent(typeof(VRCObjectSync)),
-        UdonBehaviourSyncMode(BehaviourSyncMode.Continuous),
-    ]
+    [DefaultExecutionOrder(1000)]
+    [RequireComponent(typeof(VRCPickup))]
+    [RequireComponent(typeof(VRCObjectSync))]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class UdonSunControllerHandle : UdonSharpBehaviour
     {
         [Header("Handle Settings")]
@@ -38,6 +37,15 @@ namespace EsnyaFactory
         private Light directionalLight;
         private int blendshapeDriveTargetIndex;
         private float culminationScaler;
+        private VRCPickup pickup;
+        private Vector3 prevPosition;
+        private bool prevUpdated;
+        private float lastUpdatedTime;
+        private ReflectionProbe[] probes;
+        private UdonSharpBehaviour eventTarget;
+        private string eventName;
+        private float probeRenderingDelay;
+
         private void UpdateParameterCache()
         {
             origin = controller.transform;
@@ -49,11 +57,16 @@ namespace EsnyaFactory
             sunIntensity = controller.sunIntensity;
             directionalLight = controller.directionalLight;
             culminationScaler = 1.0f / Mathf.Sin(controller.culminationAngle * Mathf.Deg2Rad);
+            probeRenderingDelay = controller.probeRenderingDelay;
 
             if (blendshapeDriveTarget != null)
             {
                 blendshapeDriveTargetIndex = blendshapeDriveTarget.sharedMesh.GetBlendShapeIndex(blendshapeDriveTargetName);
             }
+
+            probes = controller.probes;
+            eventTarget = controller.eventTarget;
+            eventName = controller.eventName;
         }
 
         private void ApplyUpdates()
@@ -86,29 +99,40 @@ namespace EsnyaFactory
             controller.RenderSingleProbe();
         }
 
-        [UdonSynced] bool updating;
-        private VRCPickup pickup;
         private void Start()
         {
             if (!controller) controller = GetComponentInParent<UdonSunController>();
             pickup = (VRCPickup)GetComponent(typeof(VRCPickup));
             UpdateParameterCache();
             ApplyUpdates();
+
+            SendCustomEventDelayedSeconds(nameof(_RenderAllProbes), probeRenderingDelay);
         }
 
-        private bool localUpdating = true;
         private void Update()
         {
-            if (updating) localUpdating = true;
-            if (localUpdating) ApplyUpdates();
-            if (!updating) localUpdating = false;
+            var position = transform.position;
+            if (position != prevPosition)
+            {
+                if (!prevUpdated) UpdateParameterCache();
+
+                prevUpdated = true;
+                prevPosition = position;
+                lastUpdatedTime = Time.time;
+
+                ApplyUpdates();
+
+            }
+            else if (prevUpdated)
+            {
+                prevUpdated = false;
+                SendCustomEventDelayedSeconds(nameof(_RenderAllProbes), probeRenderingDelay);
+            }
         }
 
         public override void OnPickup()
         {
             UpdateParameterCache();
-            Networking.SetOwner(Networking.LocalPlayer, controller.gameObject);
-            updating = true;
         }
 
         public override void OnDrop()
@@ -116,28 +140,17 @@ namespace EsnyaFactory
             var relative = transform.position - origin.position;
             var radius = relative.magnitude;
             transform.position = relative.normalized * Mathf.Clamp(radius, minRadius, maxRadius) + origin.position;
-
-            SendCustomEventDelayedSeconds(nameof(_StopUpdating), updateDelay);
-            SendCustomEventDelayedSeconds(nameof(_RequestRenderProbes), controller.probeRenderingDelay);
         }
 
-        public void _StopUpdating()
+        public void _RenderAllProbes()
         {
-            updating = pickup.IsHeld;
-        }
+            foreach (var probe in probes)
+            {
+                if (probe) probe.RenderProbe();
+            }
 
-        public void _RequestRenderProbes()
-        {
-            SendCustomNetworkEvent(NetworkEventTarget.All, nameof(controller.RenderAllProbes));
-        }
-
-        private bool isFirstSync = true;
-        public override void OnDeserialization()
-        {
-            if (!isFirstSync) return;
-            isFirstSync = false;
-            UpdateParameterCache();
-            ApplyUpdates();
+            if (eventTarget == null) return;
+            eventTarget.SendCustomEvent(eventName);
         }
     }
 }
