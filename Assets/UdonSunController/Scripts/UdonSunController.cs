@@ -13,7 +13,7 @@ using UnityEngine.SceneManagement;
 
 namespace EsnyaFactory
 {
-    [UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+    [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class UdonSunController : UdonSharpBehaviour
     {
         [Header("Styles")]
@@ -95,8 +95,10 @@ namespace EsnyaFactory
             foreach (var handle in handles)
             {
                 handle.SetProgramVariable(nameof(handle.controller), controller);
+                EditorUtility.SetDirty(UdonSharpEditorUtility.GetBackingUdonBehaviour(handle));
             }
 
+            EditorUtility.SetDirty(UdonSharpEditorUtility.GetBackingUdonBehaviour(controller));
             var errorMessage = controller.directionalLight == null ? "A Realtime DirectionalLight is required. " : handles.Length == 0 ? "A UdonSunControllerHandle is required. " : "";
             var result = errorMessage == "" ? "Done" : "Failed";
             return $"{result}: {errorMessage}{controller.probes.Length} reflection probe(s) found.";
