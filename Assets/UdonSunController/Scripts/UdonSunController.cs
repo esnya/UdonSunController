@@ -2,6 +2,7 @@
 using UdonSharp;
 using UnityEngine;
 using VRC.Udon;
+using VRC.SDK3.Components;
 #if !COMPILER_UDONSHARP && UNITY_EDITOR
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ using UnityEngine.SceneManagement;
 
 namespace EsnyaFactory
 {
+    [RequireComponent(typeof(VRCPickup))]
+    [RequireComponent(typeof(VRCObjectSync))]
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class UdonSunController : UdonSharpBehaviour
     {
@@ -21,9 +24,20 @@ namespace EsnyaFactory
         public AnimationCurve sunIntensity = new AnimationCurve();
         [Range(0, 90)] public float culminationAngle = 55;
         public Gradient fogColor = new Gradient();
-        public Material[] materials = {};
-        public string[] materialProperties = {};
-        public Gradient[] materialColors = {};
+        public Material[] materials = { };
+        public string[] materialProperties = { };
+        public Gradient[] materialColors = { };
+
+        [Header("Handle Settings")]
+        public Transform origin;
+        public float maxRadius = 0.4f;
+        public float minRadius = 0.2f;
+
+        [Header("Visual Settings")]
+        public Transform additionalRotationTarget;
+        public Vector3 rotationForward = Vector3.forward;
+        public SkinnedMeshRenderer blendshapeDriveTarget;
+        public string blendshapeDriveTargetName = "Intensity";
 
         [Header("Settings")]
         public float probeRenderingDelay = 0.5f;
@@ -41,18 +55,100 @@ namespace EsnyaFactory
         public bool overrideProbeCullingMask = true;
         public LayerMask probeCullingMask = 0b100_0011_1000_1001_0010_0111;
 
+        private bool prevUpdated;
+        private float culminationScaler;
+        private float lastUpdatedTime;
+        private int blendshapeDriveTargetIndex;
+        private Vector3 prevPosition;
+        private VRCPickup pickup;
+
         private void Start()
         {
-            SendCustomEventDelayedSeconds(nameof(RenderAllProbes), probeRenderingDelay);
+            pickup = (VRCPickup)GetComponent(typeof(VRCPickup));
+
+            if (!origin) origin = transform.parent;
+
+            culminationScaler = 1.0f / Mathf.Sin(culminationAngle * Mathf.Deg2Rad);
+
+            if (blendshapeDriveTarget != null)
+            {
+                blendshapeDriveTargetIndex = blendshapeDriveTarget.sharedMesh.GetBlendShapeIndex(blendshapeDriveTargetName);
+            }
+
+            transform.position = origin.position - directionalLight.transform.forward * maxRadius;
+
+            _ApplyUpdates();
+            _ResetPosition();
+
+            SendCustomEventDelayedSeconds(nameof(_RenderAllProbes), probeRenderingDelay);
         }
 
-        public void RenderSingleProbe()
+        private void Update()
+        {
+            var position = transform.position;
+            if (position != prevPosition)
+            {
+                prevUpdated = true;
+                prevPosition = position;
+                lastUpdatedTime = Time.time;
+
+                _ApplyUpdates();
+                _RenderSingleProbe();
+            }
+            else if (prevUpdated)
+            {
+                prevUpdated = false;
+                SendCustomEventDelayedSeconds(nameof(_RenderAllProbes), probeRenderingDelay);
+            }
+        }
+
+        public override void OnDrop()
+        {
+            _ResetPosition();
+        }
+
+        public void _ResetPosition()
+        {
+            var relative = transform.position - origin.position;
+            var radius = relative.magnitude;
+            transform.position = relative.normalized * Mathf.Clamp(radius, minRadius, maxRadius) + origin.position;
+        }
+
+        public void _ApplyUpdates()
+        {
+            var relativePosition = transform.position - origin.position;
+            var direction = relativePosition.normalized;
+            var intensity = Mathf.Clamp01((relativePosition.magnitude - minRadius) / (maxRadius - minRadius));
+            var time = Mathf.Clamp01((-direction.y * culminationScaler + 1.0f) * 0.5f);
+
+            directionalLight.transform.rotation = Quaternion.FromToRotation(-Vector3.forward, direction); ;
+            directionalLight.color = sunColor.Evaluate(time);
+            directionalLight.intensity = sunIntensity.Evaluate(time) * intensity;
+
+            RenderSettings.fogColor = fogColor.Evaluate(time);
+
+            if (materials != null)
+            {
+                for (var i = 0; i < materials.Length; i++)
+                {
+                    var material = materials[i];
+                    var materialColor = materialColors[i];
+                    if (!material) continue;
+                    material.SetColor(materialProperties[i], materialColor.Evaluate(time));
+                }
+            }
+
+            if (additionalRotationTarget != null) additionalRotationTarget.rotation = Quaternion.FromToRotation(rotationForward, direction);
+            if (blendshapeDriveTarget != null) blendshapeDriveTarget.SetBlendShapeWeight(blendshapeDriveTargetIndex, intensity * 100.0f);
+        }
+
+        public void _RenderSingleProbe()
         {
             var length = probes.Length;
             if (length > 0) probes[Time.frameCount % probes.Length].RenderProbe();
         }
 
-        public void RenderAllProbes()
+        public void _RenderAllProbes()
         {
             foreach (var probe in probes)
             {
@@ -86,22 +182,15 @@ namespace EsnyaFactory
                 probe.mode = UnityEngine.Rendering.ReflectionProbeMode.Realtime;
                 probe.refreshMode = UnityEngine.Rendering.ReflectionProbeRefreshMode.ViaScripting;
 
-                if (controller.overrideProbeCullingMask) probe.cullingMask = controller.probeCullingMask;
+                if (controller.overrideProbeCullingMask) probe.cullingMask =controller. probeCullingMask;
 
                 probe.RenderProbe();
             }
 
-            var handles = controller.GetUdonSharpComponentsInChildren<UdonSunControllerHandle>();
-            foreach (var handle in handles)
-            {
-                handle.SetProgramVariable(nameof(handle.controller), controller);
-                EditorUtility.SetDirty(UdonSharpEditorUtility.GetBackingUdonBehaviour(handle));
-            }
-
             EditorUtility.SetDirty(UdonSharpEditorUtility.GetBackingUdonBehaviour(controller));
-            var errorMessage = controller.directionalLight == null ? "A Realtime DirectionalLight is required. " : handles.Length == 0 ? "A UdonSunControllerHandle is required. " : "";
+            var errorMessage = directionalLight == null ? "A Realtime DirectionalLight is required. " : string.Empty;
             var result = errorMessage == "" ? "Done" : "Failed";
-            return $"{result}: {errorMessage}{controller.probes.Length} reflection probe(s) found.";
+            return $"{result}: {errorMessage}{probes.Length} reflection probe(s) found.";
         }
 
         private string setupResult;
