@@ -19,7 +19,9 @@
     "url": "git+https://github.com/esnya/UdonSunController.git"
   },
   "license": "MIT",
-  "author": "esnya",
+  "author": {
+    "name": "esnya"
+  },
   "legacyFolders": [
     "Assets\\UdonSunController"
   ],
