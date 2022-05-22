@@ -1,25 +1,6 @@
 {
-  "name": "com.nekometer.udon-sun-controller",
-  "version": "4.0.0-beta.2",
+  "name": "ci",
   "private": true,
-  "description": "UdonSunController provides the ability to freely control the Directional Light at runtime for your VRChat Udon world.",
-  "keywords": [
-    "VRChat",
-    "Udon",
-    "Directional",
-    "Light",
-    "Unity"
-  ],
-  "homepage": "https://github.com/esnya/UdonSunController#readme",
-  "bugs": {
-    "url": "https://github.com/esnya/UdonSunController/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/esnya/UdonSunController.git"
-  },
-  "license": "MIT",
-  "author": "esnya",
   "devDependencies": {
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",

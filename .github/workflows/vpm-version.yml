@@ -1,0 +1,17 @@
+name: VPM Version
+
+on:
+  - push
+
+jobs:
+  vpm-version:
+    needs: prebuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm install semantic-release @semantic-release/github @semantic-release/exec semantic-release-gitmoji @semantic-release/npm @semantic-release/git
+
+      - run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
