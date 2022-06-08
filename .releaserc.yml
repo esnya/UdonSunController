@@ -1,7 +1,0 @@
-plugins:
-  - semantic-release-gitmoji
-  - "@semantic-release/github"
-  - - "@semantic-release/npm"
-    - pkgRoot: Packages/com.nekometer.esnya.udon-sun-controller
-      npmPublish: false
-  - "@semantic-release/git"
