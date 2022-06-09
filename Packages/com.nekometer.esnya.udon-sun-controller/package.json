@@ -1,9 +1,9 @@
 {
   "name": "com.nekometer.esnya.udon-sun-controller",
-  "displayName": "UdonSunController",
+  "displayName": "Udon Sun Controller",
   "version": "4.0.0-beta.2",
   "private": true,
-  "description": "UdonSunController provides the ability to freely control the Directional Light at runtime for your VRChat Udon world.",
+  "description": "Udon Sun Controller provides the ability to freely control the Directional Light at runtime for your VRChat Udon world.",
   "keywords": [
     "VRChat",
     "Udon",
