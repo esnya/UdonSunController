@@ -87,6 +87,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -98,6 +99,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -130,10 +132,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5884933298031475491}
     m_Modifications:
+    - target: {fileID: -149398798724923675, guid: d44e4ac8d058b4a458224ea17f5a2b12,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: -149398798724923675, guid: d44e4ac8d058b4a458224ea17f5a2b12,
+        type: 3}
     - target: {fileID: 3213282732452975662, guid: d44e4ac8d058b4a458224ea17f5a2b12,
         type: 3}
       propertyPath: m_Name
       value: SunController
+      objectReference: {fileID: 0}
+    - target: {fileID: 3213282732453267470, guid: d44e4ac8d058b4a458224ea17f5a2b12,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3213282732453267470, guid: d44e4ac8d058b4a458224ea17f5a2b12,
         type: 3}
@@ -148,11 +161,6 @@ PrefabInstance:
     - target: {fileID: 3213282732453267470, guid: d44e4ac8d058b4a458224ea17f5a2b12,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3213282732453267470, guid: d44e4ac8d058b4a458224ea17f5a2b12,
-        type: 3}
-      propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3213282732453267470, guid: d44e4ac8d058b4a458224ea17f5a2b12,

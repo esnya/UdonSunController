@@ -187,7 +187,7 @@ namespace EsnyaFactory
                 probe.RenderProbe();
             }
 
-            EditorUtility.SetDirty(UdonSharpEditorUtility.GetBackingUdonBehaviour(controller));
+            EditorUtility.SetDirty(controller);
             var errorMessage = directionalLight == null ? "A Realtime DirectionalLight is required. " : string.Empty;
             var result = errorMessage == "" ? "Done" : "Failed";
             return $"{result}: {errorMessage}{probes.Length} reflection probe(s) found.";
