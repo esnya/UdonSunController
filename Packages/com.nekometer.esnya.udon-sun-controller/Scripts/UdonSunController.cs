@@ -217,7 +217,7 @@ namespace EsnyaFactory
             EditorSceneManager.sceneSaving += (_, __) => SetupAll();
         }
 
-        private static IEnumerable<T> GetUdonSharpComponentsInScene<T>() where T : UdonSharpBehaviour
+        private static IEnumerable<T> GetComponentsInScene<T>() where T : UdonSharpBehaviour
         {
             return FindObjectsOfType<UdonBehaviour>()
                 .Where(UdonSharpEditorUtility.IsUdonSharpBehaviour)
@@ -228,7 +228,7 @@ namespace EsnyaFactory
 
         private static void SetupAll()
         {
-            var targets = GetUdonSharpComponentsInScene<UdonSunController>();
+            var targets = GetComponentsInScene<UdonSunController>();
             foreach (var target in targets)
             {
                 if (target?.autoSetupBeforeSave != true) continue;
@@ -236,7 +236,7 @@ namespace EsnyaFactory
                 var result = SetupFromScene(target);
                 Debug.Log($"[{target.gameObject.name}] Auto setup {result}");
 
-                EditorUtility.SetDirty(UdonSharpEditorUtility.GetBackingUdonBehaviour(target));
+                EditorUtility.SetDirty(target);
             }
         }
     }
