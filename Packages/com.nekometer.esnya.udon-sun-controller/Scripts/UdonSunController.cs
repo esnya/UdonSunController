@@ -10,6 +10,7 @@ using UdonSharpEditor;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
+using VRC.SDKBase.Editor.BuildPipeline;
 #endif
 
 namespace EsnyaFactory
@@ -209,14 +210,6 @@ namespace EsnyaFactory
             }
         }
 
-
-        [InitializeOnLoadMethod]
-        static public void RegisterCallback()
-        {
-            SceneManager.activeSceneChanged += (_, __) => SetupAll();
-            EditorSceneManager.sceneSaving += (_, __) => SetupAll();
-        }
-
         private static IEnumerable<T> GetComponentsInScene<T>() where T : UdonSharpBehaviour
         {
             return FindObjectsOfType<UdonBehaviour>()
@@ -237,6 +230,25 @@ namespace EsnyaFactory
                 Debug.Log($"[{target.gameObject.name}] Auto setup {result}");
 
                 EditorUtility.SetDirty(target);
+            }
+        }
+
+        [InitializeOnLoadMethod]
+        public static void RegisterCallbacks()
+        {
+            EditorApplication.playModeStateChanged += (PlayModeStateChange e) => {
+                if (e == PlayModeStateChange.EnteredPlayMode) SetupAll();
+            };
+        }
+
+        public class BuildCallback : Editor, IVRCSDKBuildRequestedCallback
+        {
+            public int callbackOrder => 10;
+
+            public bool OnBuildRequested(VRCSDKRequestedBuildType requestedBuildType)
+            {
+                SetupAll();
+                return true;
             }
         }
     }
