@@ -2,33 +2,47 @@
   "name": "com.nekometer.esnya.udon-sun-controller",
   "displayName": "Udon Sun Controller",
   "version": "4.0.0-beta.2",
-  "private": true,
   "description": "Udon Sun Controller provides the ability to freely control the Directional Light at runtime for your VRChat Udon world.",
+  "unity": "2019.4",
+  "private": true,
   "keywords": [
-    "VRChat",
-    "Udon",
-    "Directional",
-    "Light",
-    "Unity"
+	  "VRChat",
+	  "Udon",
+	  "Directional",
+	  "Light",
+	  "Unity"
   ],
-  "homepage": "https://github.com/esnya/UdonSunController#readme",
-  "bugs": {
-    "url": "https://github.com/esnya/UdonSunController/issues"
+  "dependencies": {},
+  "gitDependencies": {},
+  "vpmDependencies": {
+	"com.vrchat.udonsharp": "1.x.x",
+	"com.vrchat.base": "3.x.x",
+	"com.vrchat.worlds": "3.x.x"
+  },
+  "legacyFolders": {
+	  "Assets\\UdonSunController": ""
+  },
+  "legacyFiles": {},
+  "homepage": {
+	  "url": "https://github.com/esnya/UdonSunController#readme"
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/esnya/UdonSunController.git"
+	  "type": "git",
+	  "url": "git+https://github.com/esnya/UdonSunController.git"
+  },
+  "bugs": {
+	  "url": "https://github.com/esnya/UdonSunController/issues"
   },
   "license": "MIT",
   "author": {
-    "name": "esnya"
+	  "name": "esnya",
+	  "url": "https://github.com/esnya/UdonSunController"
   },
-  "legacyFolders": [
-    "Assets\\UdonSunController"
-  ],
-  "gitDependencies": {
-    "com.merlinvr.udonsharp": "https://github.com/vrchat-community/UdonSharp.git?path=Assets/UdonSharp#1.0.1",
-    "com.vrchat.base": "https://github.com/vrchat/packages.git?path=/packages/com.vrchat.base#3.0.4",
-    "com.vrchat.worlds": "https://github.com/vrchat/packages.git?path=/packages/com.vrchat.worlds#3.0.4"
-  }
+  "samples": [
+    {
+      "displayName": "Demo",
+      "description": "A Demo scene that shows the functionality of UdonSunController",
+      "path": "Demo"
+    }
+  ]
 }
