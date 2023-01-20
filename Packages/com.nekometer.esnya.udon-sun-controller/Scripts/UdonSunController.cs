@@ -229,7 +229,7 @@ namespace EsnyaFactory
                 var result = SetupFromScene(target);
                 Debug.Log($"[{target.gameObject.name}] Auto setup {result}");
 
-                EditorUtility.SetDirty(target);
+                UdonSharpEditorUtility.CopyProxyToUdon(target);
             }
         }
 
