@@ -13,5 +13,5 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": []
+    "defineConstraints": ["UDONSHARP"]
 }

@@ -1,9 +1,9 @@
 {
-  "name": "com.nekometer.esnya.udon-sun-controller-packages",
+  "name": "udon-sun-controller",
   "displayName": "Udon Sun Controller",
   "version": "4.1.0-alpha.1",
   "private": true,
-  "description": "",
+  "description": "Udon Sun Controller provides the ability to freely control the Directional Light at runtime for your VRChat Udon world.",
   "homepage": "https://github.com/esnya/UdonSunController#readme",
   "bugs": {
     "url": "https://github.com/esnya/UdonSunController/issues"
@@ -16,18 +16,16 @@
   "author": {
     "name": "esnya"
   },
-  "workspaces": [
-    "Packages/*"
-  ],
   "scripts": {
-    "publish": "npm publish -ws",
-    "version": "npm version -ws ${npm_package_version}"
+    "postversion": "foreach Packages/*/ \"npm --prefix #{path} version ${npm_package_version}\""
   },
   "devDependencies": {
+    "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^8.0.4",
-    "@semantic-release/npm": "^9.0.1",
-    "semantic-release": "^20.1.0",
-    "semantic-release-gitmoji": "^1.4.5"
+    "@semantic-release/github": "^8.0.7",
+    "@semantic-release/npm": "^9.0.2",
+    "foreach-cli": "^1.8.1",
+    "semantic-release": "^19.0.5",
+    "semantic-release-gitmoji": "^1.6.3"
   }
 }
