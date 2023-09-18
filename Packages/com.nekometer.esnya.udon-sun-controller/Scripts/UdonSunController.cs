@@ -23,6 +23,7 @@ namespace EsnyaFactory
         [Header("Styles")]
         public Gradient sunColor = new Gradient();
         public AnimationCurve sunIntensity = new AnimationCurve();
+        [Min(0)] public float minimumSunIntensity = 0.001f;
         [Range(0, 90)] public float culminationAngle = 55;
         public Gradient fogColor = new Gradient();
         public Material[] materials = { };
@@ -124,7 +125,7 @@ namespace EsnyaFactory
 
             directionalLight.transform.rotation = Quaternion.FromToRotation(-Vector3.forward, direction); ;
             directionalLight.color = sunColor.Evaluate(time);
-            directionalLight.intensity = sunIntensity.Evaluate(time) * intensity;
+            directionalLight.intensity = Mathf.Max(sunIntensity.Evaluate(time) * intensity, minimumSunIntensity);
 
             RenderSettings.fogColor = fogColor.Evaluate(time);
 
