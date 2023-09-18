@@ -42,6 +42,8 @@ jobs:
     if: needs.semantic-release.outputs.prev_version != needs.semantic-release.outputs.next_version
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: v${{ needs.semantic-release.outputs.next_version }}
       - run: echo "version=${{ needs.semantic-release.outputs.next_version }}" >> $GITHUB_ENV
 
       - run: |
