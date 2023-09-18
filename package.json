@@ -1,7 +1,7 @@
 {
   "name": "udon-sun-controller",
   "displayName": "Udon Sun Controller",
-  "version": "4.1.0-beta.1",
+  "version": "4.1.0",
   "private": true,
   "description": "Udon Sun Controller provides the ability to freely control the Directional Light at runtime for your VRChat Udon world.",
   "homepage": "https://github.com/esnya/UdonSunController#readme",
