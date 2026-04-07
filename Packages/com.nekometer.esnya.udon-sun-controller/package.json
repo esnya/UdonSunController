@@ -35,9 +35,8 @@
       "path": "Demo"
     }
   ],
-  "unity": "2019.4",
+  "unity": "2022.3",
   "vpmDependencies": {
-    "com.vrchat.udonsharp": "1.1.7",
-    "com.vrchat.worlds": "3.1.1"
+    "com.vrchat.worlds": "^3.7.0"
   }
 }
