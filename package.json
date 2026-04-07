@@ -20,10 +20,10 @@
     "postversion": "foreach Packages/*/ \"npm --prefix #{path} version ${npm_package_version}\""
   },
   "devDependencies": {
-    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/exec": "^7.1.0",
     "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^8.1.0",
-    "@semantic-release/npm": "^13.1.4",
+    "@semantic-release/github": "^12.0.6",
+    "@semantic-release/npm": "^13.1.5",
     "foreach-cli": "^1.8.1",
     "semantic-release": "^25.0.3",
     "semantic-release-gitmoji": "^1.6.9"

@@ -11,14 +11,14 @@ jobs:
   semantic-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: lts/*
+          node-version: 22.14.0
       - run: npm ci
 
       - id: prev_version
-        uses: notiz-dev/github-action-json-property@7c8cf5cc36eb85d8d287a8086a39dac59628eb31
+        uses: notiz-dev/github-action-json-property@a5a9c668b16513c737c3e1f8956772c99c73f6e8
         with:
             path: "Packages/${{env.packageName}}/package.json"
             prop_path: "version"
@@ -28,7 +28,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - id: version
-        uses: notiz-dev/github-action-json-property@7c8cf5cc36eb85d8d287a8086a39dac59628eb31
+        uses: notiz-dev/github-action-json-property@a5a9c668b16513c737c3e1f8956772c99c73f6e8
         with:
             path: "Packages/${{env.packageName}}/package.json"
             prop_path: "version"
@@ -41,33 +41,33 @@ jobs:
     needs: semantic-release
     if: needs.semantic-release.outputs.prev_version != needs.semantic-release.outputs.next_version
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - run: echo "version=${{ needs.semantic-release.outputs.next_version }}" >> $GITHUB_ENV
 
       - run: |
           echo "zipFile=${{ env.packageName }}-${{ env.version }}".zip >> $GITHUB_ENV
           echo "unityPackage=${{ env.packageName }}-${{ env.version }}.unitypackage" >> $GITHUB_ENV
-      - uses: thedoctor0/zip-release@09336613be18a8208dfa66bd57efafd9e2685657
+      - uses: thedoctor0/zip-release@b57d897cb5d60cb78b51a507f63fa184cfe35554
         with:
           type: "zip"
           directory: "Packages/${{env.packageName}}/"
           filename: "../../${{env.zipFile}}" # make the zip file two directories up, since we start two directories in above
 
       - run: find "Packages/${{env.packageName}}/" -name \*.meta >> metaList
-      - uses: pCYSl5EDgo/create-unitypackage@cfcd3cf0391a5ef1306342794866a9897c32af0b
+      - uses: pCYSl5EDgo/create-unitypackage@b5c57408698b1fab8b3a84d4b67f767b8b7c0be9
         with:
           package-path: ${{ env.unityPackage }}
           include-files: metaList
 
-      - uses: svenstaro/upload-release-action@v2
+      - uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de
         with:
           tag: v${{ env.version }}
           file: ${{ env.zipFile }}
-      - uses: svenstaro/upload-release-action@v2
+      - uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de
         with:
           tag: v${{ env.version }}
           file: ${{ env.unityPackage }}
-      - uses: svenstaro/upload-release-action@v2
+      - uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de
         with:
           tag: v${{ env.version }}
           file: Packages/${{ env.packageName }}/package.json

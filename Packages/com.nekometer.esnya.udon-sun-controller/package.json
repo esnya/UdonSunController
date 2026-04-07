@@ -37,6 +37,6 @@
   ],
   "unity": "2022.3",
   "vpmDependencies": {
-    "com.vrchat.worlds": "^3.7.0"
+    "com.vrchat.worlds": "^3.10.2"
   }
 }
