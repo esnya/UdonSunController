@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 if [ -n "${CI:-}" ]; then
-  git diff-tree --check --no-commit-id --root -r HEAD
+  git show --check --format= HEAD
 else
   git diff --check
 fi
