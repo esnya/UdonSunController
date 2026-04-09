@@ -5,7 +5,14 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 if [ -n "${CI:-}" ]; then
-  git diff --check HEAD^! -- '*.cs' '*.js' '*.json' '*.yml' '*.yaml' '*.md' '*.sh' '*.asmdef' '.releaserc.yml'
+  CHECK_PATHS=('*.cs' '*.js' '*.json' '*.yml' '*.yaml' '*.md' '*.sh' '*.asmdef' '.releaserc.yml')
+  if git rev-parse --verify HEAD^2 >/dev/null 2>&1; then
+    git diff --check HEAD^1...HEAD^2 -- "${CHECK_PATHS[@]}"
+  elif git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+    git diff --check HEAD^! -- "${CHECK_PATHS[@]}"
+  else
+    git diff-tree --check --root -r HEAD -- "${CHECK_PATHS[@]}"
+  fi
 else
   git diff --check
 fi
@@ -58,7 +65,9 @@ for (const fullPath of csFiles) {
   const guardStack = [];
   for (const line of lines) {
     if (/^\s*#if\b/.test(line)) {
-      guardStack.push(/^\s*#if\s+(?:UNITY_EDITOR|!COMPILER_UDONSHARP\s*&&\s*UNITY_EDITOR|UNITY_EDITOR\s*&&\s*!COMPILER_UDONSHARP)\s*$/.test(line));
+      const matchesEditorOnly =
+        /^\s*#if\s+(?:UNITY_EDITOR|!COMPILER_UDONSHARP\s*&&\s*UNITY_EDITOR|UNITY_EDITOR\s*&&\s*!COMPILER_UDONSHARP)\s*$/.test(line);
+      guardStack.push({ active: matchesEditorOnly, matched: matchesEditorOnly });
       continue;
     }
     if (/^\s*#endif\b/.test(line)) {
@@ -66,17 +75,24 @@ for (const fullPath of csFiles) {
       continue;
     }
     if (/^\s*#else\b/.test(line)) {
-      if (guardStack.length > 0) guardStack[guardStack.length - 1] = false;
+      if (guardStack.length > 0) {
+        const current = guardStack[guardStack.length - 1];
+        current.active = !current.matched;
+        current.matched = true;
+      }
       continue;
     }
     if (/^\s*#elif\b/.test(line)) {
       if (guardStack.length > 0) {
-        guardStack[guardStack.length - 1] =
+        const current = guardStack[guardStack.length - 1];
+        const matchesEditorOnly =
           /^\s*#elif\s+(?:UNITY_EDITOR|!COMPILER_UDONSHARP\s*&&\s*UNITY_EDITOR|UNITY_EDITOR\s*&&\s*!COMPILER_UDONSHARP)\s*$/.test(line);
+        current.active = !current.matched && matchesEditorOnly;
+        current.matched = current.matched || matchesEditorOnly;
       }
       continue;
     }
-    if (!guardStack.includes(true) && /^\s*using (UnityEditor|UdonSharpEditor);$/.test(line)) {
+    if (!guardStack.some(frame => frame.active) && /^\s*using (UnityEditor|UdonSharpEditor);$/.test(line)) {
       errors.push(`${relativePath}: runtime script references editor-only namespaces without an editor preprocessor guard.`);
       break;
     }
