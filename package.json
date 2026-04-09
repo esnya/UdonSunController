@@ -27,5 +27,6 @@
     "foreach-cli": "^1.8.1",
     "semantic-release": "^19.0.5",
     "semantic-release-gitmoji": "^1.6.3"
-  }
+  },
+  "unity": "2022.3"
 }
