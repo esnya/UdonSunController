@@ -4,7 +4,11 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-git diff --check
+if [ -n "${CI:-}" ]; then
+  git diff-tree --check --no-commit-id --root -r HEAD
+else
+  git diff --check
+fi
 
 ruby -e 'if File.exist?(".releaserc.yml"); require "yaml"; YAML.load_file(".releaserc.yml"); end; Dir[".github/workflows/*.yml"].sort.each { |path| require "yaml"; YAML.load_file(path) }'
 
@@ -41,8 +45,6 @@ for (const file of [...packageJsons, ...asmdefs]) {
   JSON.parse(fs.readFileSync(file, "utf8"));
 }
 
-const editorGuardPattern = /#if\s+(?:!COMPILER_UDONSHARP\s*&&\s*)?UNITY_EDITOR|#if\s+UNITY_EDITOR/;
-const forbiddenUsingPattern = /^(using UnityEditor;|using UdonSharpEditor;)$/m;
 const errors = [];
 const csFiles = [];
 if (fs.existsSync(packageRoot)) {
@@ -52,8 +54,32 @@ for (const fullPath of csFiles) {
   const relativePath = path.relative(process.cwd(), fullPath).replaceAll(path.sep, "/");
   if (relativePath.includes('/Editor/')) continue;
   const source = fs.readFileSync(fullPath, 'utf8');
-  if (forbiddenUsingPattern.test(source) && !editorGuardPattern.test(source)) {
-    errors.push(`${relativePath}: runtime script references editor-only namespaces without an editor preprocessor guard.`);
+  const lines = source.split(/\r?\n/);
+  const guardStack = [];
+  for (const line of lines) {
+    if (/^\s*#if\b/.test(line)) {
+      guardStack.push(/^\s*#if\s+(?:UNITY_EDITOR|!COMPILER_UDONSHARP\s*&&\s*UNITY_EDITOR|UNITY_EDITOR\s*&&\s*!COMPILER_UDONSHARP)\s*$/.test(line));
+      continue;
+    }
+    if (/^\s*#endif\b/.test(line)) {
+      guardStack.pop();
+      continue;
+    }
+    if (/^\s*#else\b/.test(line)) {
+      if (guardStack.length > 0) guardStack[guardStack.length - 1] = false;
+      continue;
+    }
+    if (/^\s*#elif\b/.test(line)) {
+      if (guardStack.length > 0) {
+        guardStack[guardStack.length - 1] =
+          /^\s*#elif\s+(?:UNITY_EDITOR|!COMPILER_UDONSHARP\s*&&\s*UNITY_EDITOR|UNITY_EDITOR\s*&&\s*!COMPILER_UDONSHARP)\s*$/.test(line);
+      }
+      continue;
+    }
+    if (!guardStack.includes(true) && /^\s*using (UnityEditor|UdonSharpEditor);$/.test(line)) {
+      errors.push(`${relativePath}: runtime script references editor-only namespaces without an editor preprocessor guard.`);
+      break;
+    }
   }
 }
 
