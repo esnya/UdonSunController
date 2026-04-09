@@ -11,7 +11,10 @@ if [ -n "${CI:-}" ]; then
   else
     TARGET_COMMIT='HEAD'
   fi
-  git show --check --format= "$TARGET_COMMIT" -- "${CHECK_PATHS[@]}"
+  mapfile -t CHECK_FILES < <(git diff-tree --no-commit-id --name-only --root -r "$TARGET_COMMIT" -- "${CHECK_PATHS[@]}")
+  if [ "${#CHECK_FILES[@]}" -gt 0 ]; then
+    git diff-tree --check --no-commit-id --root -r "$TARGET_COMMIT" -- "${CHECK_FILES[@]}"
+  fi
 else
   git diff --check
 fi
