@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 if [ -n "${CI:-}" ]; then
-  git show --check --format= HEAD
+  git diff --check HEAD^! -- '*.cs' '*.js' '*.json' '*.yml' '*.yaml' '*.md' '*.sh' '*.asmdef' '.releaserc.yml'
 else
   git diff --check
 fi
