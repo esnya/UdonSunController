@@ -7,12 +7,11 @@ cd "$ROOT_DIR"
 if [ -n "${CI:-}" ]; then
   CHECK_PATHS=('*.cs' '*.js' '*.json' '*.yml' '*.yaml' '*.md' '*.sh' '*.asmdef' '.releaserc.yml')
   if git rev-parse --verify HEAD^2 >/dev/null 2>&1; then
-    git diff --check HEAD^1...HEAD^2 -- "${CHECK_PATHS[@]}"
-  elif git rev-parse --verify HEAD^ >/dev/null 2>&1; then
-    git diff --check HEAD^! -- "${CHECK_PATHS[@]}"
+    TARGET_COMMIT='HEAD^2'
   else
-    git diff-tree --check --root -r HEAD -- "${CHECK_PATHS[@]}"
+    TARGET_COMMIT='HEAD'
   fi
+  git show --check --format= "$TARGET_COMMIT" -- "${CHECK_PATHS[@]}"
 else
   git diff --check
 fi
