@@ -27,5 +27,8 @@
     "foreach-cli": "^1.8.1",
     "semantic-release": "^25.0.3",
     "semantic-release-gitmoji": "^1.6.9"
+  },
+  "engines": {
+    "node": "^22.14.0 || >=24.10.0"
   }
 }
